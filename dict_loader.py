@@ -1,6 +1,9 @@
 import numpy as np
+import time
 
-dict_file = '/home/lyan/Documents/toxis_comment_prediction/glove.6B.50d.txt'
+current_milli_time = lambda: int(round(time.time() * 1000))
+
+dict_file = '../data/glove.42B.300d.txt'
 
 def clean_query(tq):
     result = " "
@@ -18,13 +21,18 @@ def process_line(line):
     return w,weights
 
 def get_dict():
-    with open(dict_file) as f:
-         lines = f.readlines()
-
     result = {}
-    for l in lines:
-        word, weights = process_line(l)
-        result[word] = weights
+    i = 0
+    st = current_milli_time()
+    with open(dict_file, encoding='utf-8') as f:
+        for l in f:
+            i += 1
+            word, weights = process_line(l)
+            result[word] = weights
+            if i % 1000 == 0:
+                elapsed = current_milli_time() - st
+                st = current_milli_time()
+                print('doing ',i/1000, ' elapsed :',elapsed, sep=' ',end='',flush=True)
 
     return result
 
